@@ -16,18 +16,18 @@ app.use(express.static(__dirname));
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI)
     .then(() => console.log('✅ Connected to MongoDB'))
-    .catch(err => console.error('❌ MongoDB connection error:', err));
+    .catch(err => console.error('MongoDB connection error:', err));
 
 // Serve HTML pages
-app.get('/', (req, res) => {
+app.get('/', req, res => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-app.get('/dashboard', (req, res) => {
+app.get('/dashboard', req, res => {
     res.sendFile(path.join(__dirname, 'dashboard.html'));
 });
 
-app.get('/register', (req, res) => {
+app.get('/register', req, res => {
     res.sendFile(path.join(__dirname, 'register.html'));
 });
 
@@ -35,15 +35,17 @@ app.get('/register', (req, res) => {
 app.post('/register', async (req, res) => {
     try {
         const { username, password } = req.body;
-        
+
+        // Check if user already exists
         const existingUser = await User.findOne({ username });
         if (existingUser) {
             return res.status(400).json({ success: false, message: 'Username already exists' });
         }
-        
+
+        // Create new user
         const user = new User({ username, password });
-        await user.save(); // 🔥 Saves to MongoDB
-        
+        await user.save(); // Saves to MongoDB
+
         res.json({ success: true, message: 'User registered successfully' });
     } catch (error) {
         console.error('Registration error:', error);
@@ -55,17 +57,17 @@ app.post('/register', async (req, res) => {
 app.post('/login', async (req, res) => {
     try {
         const { username, password } = req.body;
-        
-        const user = await User.findOne({ username }); // 🔥 Reads from MongoDB
+        const user = await User.findOne({ username }); // Reads from MongoDB
+
         if (!user) {
             return res.status(401).json({ success: false, message: 'Invalid username or password' });
         }
-        
+
         const isMatch = await user.comparePassword(password);
         if (!isMatch) {
             return res.status(401).json({ success: false, message: 'Invalid username or password' });
         }
-        
+
         res.json({ success: true, message: 'Login successful' });
     } catch (error) {
         console.error('Login error:', error);
@@ -75,6 +77,4 @@ app.post('/login', async (req, res) => {
 
 // Start server
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
-});
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
