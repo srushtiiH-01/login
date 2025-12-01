@@ -47,7 +47,7 @@
         });
 
         const text = await response.text();
-        const data = text ? JSON.parse(text) : null; /* guarded parse to avoid JSON errors [web:111][web:104] */
+        const data = text ? JSON.parse(text) : null;
 
         if (!response.ok || !data || !data.success) {
           message.textContent = data?.message || 'Invalid username or password';
