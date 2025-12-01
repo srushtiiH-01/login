@@ -37,7 +37,6 @@ app.post('/register', async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    // Check if user already exists
     const existingUser = await User.findOne({ username });
     if (existingUser) {
       return res
@@ -45,7 +44,6 @@ app.post('/register', async (req, res) => {
         .json({ success: false, message: 'Username already exists' });
     }
 
-    // Create new user
     const user = new User({ username, password });
     await user.save();
 
