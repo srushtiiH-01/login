@@ -11,28 +11,25 @@ const app = express();
 // Middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
-// Serve static files (CSS, JS, images, etc.) from current folder
-// Make sure index.html, register.html, dashboard.html are here or adjust path
 app.use(express.static(__dirname));
 
 // Connect to MongoDB
 mongoose
   .connect(process.env.MONGODB_URI)
   .then(() => console.log('✅ Connected to MongoDB'))
-  .catch(err => console.error('MongoDB connection error:', err)); [web:38][web:39]
+  .catch(err => console.error('MongoDB connection error:', err));
 
 // Serve HTML pages
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html')); [web:2][web:5]
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 app.get('/dashboard', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dashboard.html')); [web:2][web:5]
+  res.sendFile(path.join(__dirname, 'dashboard.html'));
 });
 
 app.get('/register', (req, res) => {
-  res.sendFile(path.join(__dirname, 'register.html')); [web:2][web:5]
+  res.sendFile(path.join(__dirname, 'register.html'));
 });
 
 // Register endpoint
@@ -66,7 +63,7 @@ app.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    const user = await User.findOne({ username }); // Reads from MongoDB
+    const user = await User.findOne({ username });
     if (!user) {
       return res
         .status(401)
@@ -89,7 +86,7 @@ app.post('/login', async (req, res) => {
   }
 });
 
-// Start server (works locally and on Render)
+// Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`✅ Server running on port ${PORT}`);
