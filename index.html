@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login Page</title>
+  <title>Login</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -14,14 +14,58 @@
         <label for="username">Username</label>
         <input type="text" id="username" name="username" required>
       </div>
+
       <div class="form-group">
         <label for="password">Password</label>
         <input type="password" id="password" name="password" required>
       </div>
+
       <button type="submit">Login</button>
     </form>
+
     <p id="message"></p>
+
+    <p class="login-link">
+      Don't have an account?
+      <a href="/register">Register here</a>
+    </p>
   </div>
-  <script src="script.js"></script>
+
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const message = document.getElementById('message');
+
+      try {
+        const response = await fetch('/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        const text = await response.text();
+        const data = text ? JSON.parse(text) : null; /* guarded parse to avoid JSON errors [web:111][web:104] */
+
+        if (!response.ok || !data || !data.success) {
+          message.textContent = data?.message || 'Invalid username or password';
+          message.className = 'error';
+          return;
+        }
+
+        message.textContent = 'Login successful! Redirecting...';
+        message.className = 'success';
+
+        setTimeout(() => {
+          window.location.href = '/dashboard';
+        }, 1000);
+      } catch (error) {
+        message.textContent = 'Connection error. Please try again.';
+        message.className = 'error';
+      }
+    });
+  </script>
 </body>
 </html>
