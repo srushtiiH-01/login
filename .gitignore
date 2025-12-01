@@ -8,3 +8,5 @@ Thumbs.db
 
 # Logs
 *.log
+.env
+node_modules/
